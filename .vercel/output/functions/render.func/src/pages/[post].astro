@@ -1,0 +1,117 @@
+---
+import Layout from "../layouts/Layout.astro";
+import * as types from "../types/types.d";
+
+const apiWp = import.meta.env.SECRET_API;
+const wpType = import.meta.env.SECRET_TYPE_POST;
+const res = await fetch(`${apiWp}/wp-json/wp/v2/${wpType}`);
+const dataPost: types.Poster[] = await res.json();
+const idList: number[] = dataPost.map((l) => l.id);
+//console.log(idList);
+const { post } = Astro.params;
+const info = dataPost.find((p) => p.slug === post);
+
+if (!info) {
+  return Astro.redirect("/404");
+}
+
+const imageId = info.featured_media;
+const resImg = await fetch(`${apiWp}/wp-json/wp/v2/media/${imageId}`);
+const dataPostImg: types.Poster = await resImg.json();
+const imageUrl = dataPostImg.source_url;
+
+const bounceAnimation = {
+  old: {
+    name: "bounce", // same name as the keyframe in layouts/Main
+    duration: "1s",
+    easing: "linear",
+    fillMode: "forwards",
+  },
+  new: {
+    name: "bounce",
+    duration: "1s",
+    easing: "linear",
+    fillMode: "backwards",
+  },
+};
+
+const bounce = {
+  forwards: bounceAnimation,
+  backwards: bounceAnimation,
+};
+---
+
+<Layout title={`${info.title.rendered}`}>
+  <main>
+    <header></header>
+
+    <div class="single-post">
+      <picture>
+        <a href="/" type="button" class="back-btn">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 14 10">
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M1 5h12m0 0L9 1m4 4L9 9"></path>
+          </svg>
+        </a>
+        <img
+          class="view-img"
+          src={imageUrl}
+          alt={`Portada del libro ${info.title.rendered}`}
+          style={`view-transition-name: post-${info.id}`}
+        />
+      </picture>
+      <h1 style={`view-transition-name: tl-${info.id}`}>{info.title.rendered}</h1>
+    </div>
+  </main>
+</Layout>
+
+<style lang="scss">
+  main {
+    h1 {
+      color: #fff;
+      text-align: center;
+    }
+    picture {
+      position: relative;
+      width: 70%;
+      display: block;
+      margin: auto;
+      a {
+        position: absolute;
+        z-index: 9;
+        color: #404040;
+        background: #fff;
+        height: 36px;
+        width: 36px;
+        border-radius: 50%;
+        padding: 0.4rem;
+        transform: rotate(180deg);
+        margin: 0.3rem;
+        box-shadow: 0 0 10px rgb(0 0 0 / 30%);
+        svg {
+          fill: currentColor;
+          height: 50%;
+          left: 50%;
+          position: absolute;
+          stroke: currentColor;
+          stroke-width: 0;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 50%;
+        }
+      }
+      img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        margin: auto;
+        display: block;
+        border-radius: 0.8rem;
+      }
+    }
+  }
+</style>

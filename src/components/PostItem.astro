@@ -1,0 +1,85 @@
+---
+import type { TransitionAnimationValue } from "astro";
+
+export interface Props {
+  id: number;
+  title: string;
+  excerpt: string;
+  img: string;
+  i?: number;
+  featured_media?: number;
+  slug?: string;
+
+  to?: string;
+  mediaTransitionName?: string;
+  mediaTransitionAnimate?: TransitionAnimationValue;
+  contentTransitionAnimate?: TransitionAnimationValue;
+}
+
+const {
+  id,
+  title,
+  img,
+  i,
+  slug,
+  excerpt,
+  to,
+  mediaTransitionName = "none",
+  mediaTransitionAnimate = "fade",
+  contentTransitionAnimate = "fade",
+} = Astro.props;
+---
+
+<a class="main-post" href={`/${slug}`}>
+  <img
+    transition:name={mediaTransitionName}
+    transition:animate={mediaTransitionAnimate}
+    alt={`${title}`}
+    class="transition-all"
+    src={img}
+    style={`view-transition-name: post-${id}`}
+  />
+  <div class="content-post">
+    <h1
+    style={`view-transition-name: tl-${id}`}
+    >
+      {title}
+    </h1>
+    <p>{excerpt}</p>
+    <p class="view"><strong>Ver mas</strong></p>
+  </div>
+</a>
+
+<style lang="scss">
+  a.main-post {
+    position: relative;
+    text-decoration: none;
+    display: block;
+    background: #252525;
+    width: 100%;
+    border-radius: 14px 14px 50px 6px;
+    img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      clip-path: circle(64% at 70% 32%);
+    }
+    .content-post {
+      padding: 1rem;
+      h1 {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      p {
+        color: #fff;
+        text-align: left;
+        &.view {
+          position: relative;
+          font-size: 18px;
+          margin: 0;
+        }
+      }
+    }
+  }
+</style>

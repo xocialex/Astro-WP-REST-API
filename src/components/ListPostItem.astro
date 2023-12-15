@@ -1,0 +1,53 @@
+---
+import PostItem from "./PostItem.astro";
+import * as types from "../types/types.d";
+
+const apiWp = import.meta.env.SECRET_API;
+const wpType = import.meta.env.SECRET_TYPE_POST;
+const res = await fetch(`${apiWp}/wp-json/wp/v2/${wpType}`);
+const dataPost: types.Poster[] = await res.json();
+
+const imageUrls = await Promise.all(
+  dataPost.map(async (post: types.Poster) => {
+    const imageId = post.featured_media;
+    if (imageId) {
+      const resImg = await fetch(`${apiWp}/wp-json/wp/v2/media/${imageId}`);
+      const dataPostImg = await resImg.json();
+      return dataPostImg.source_url;
+    }
+  }),
+);
+---
+
+<div class="main--content">
+  {
+    dataPost.map(({ id, title, excerpt, slug }, i) => (
+      <PostItem
+        id={id}
+        title={title.rendered}
+        img={imageUrls[i]}
+        excerpt={excerpt.rendered.slice(1 - 100)}
+        slug={slug}
+      />
+    ))
+  }
+</div>
+
+<style lang="scss">
+  $phone: 600px;
+  $tablet: 900px;
+
+  .main--content {
+    margin: 0 auto;
+    display: grid;
+    grid-gap: 4rem;
+
+    @media (min-width: $phone) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    @media (min-width: $tablet) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
