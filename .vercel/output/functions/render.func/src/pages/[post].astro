@@ -6,7 +6,7 @@ const apiWp = import.meta.env.SECRET_API;
 const wpType = import.meta.env.SECRET_TYPE_POST;
 const res = await fetch(`${apiWp}/wp-json/wp/v2/${wpType}`);
 const dataPost: types.Poster[] = await res.json();
-const idList: number[] = dataPost.map((l) => l.id);
+//const idList: number[] = dataPost.map((l) => l.id);
 //console.log(idList);
 const { post } = Astro.params;
 const info = dataPost.find((p) => p.slug === post);
@@ -20,6 +20,8 @@ const resImg = await fetch(`${apiWp}/wp-json/wp/v2/media/${imageId}`);
 const dataPostImg: types.Poster = await resImg.json();
 const imageUrl = dataPostImg.source_url;
 
+
+{/*
 const bounceAnimation = {
   old: {
     name: "bounce", // same name as the keyframe in layouts/Main
@@ -39,6 +41,8 @@ const bounce = {
   forwards: bounceAnimation,
   backwards: bounceAnimation,
 };
+*/}
+
 ---
 
 <Layout title={`${info.title.rendered}`}>
