@@ -7,5 +7,5 @@ export default defineConfig({
   output: "server",
   adapter: vercel(),
   site: 'https://xocialex.github.io',
-  base: '/Astro-WP-REST-API',
+  base: '/',
 });
